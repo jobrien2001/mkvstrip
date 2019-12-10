@@ -387,6 +387,10 @@ def main(params=None):
                              " retain, strip all subtitles.")
     parser.add_argument("-v", "--verbose", action="store_true",
                         default=False, help="Verbose output.")
+    parser.add_argument("-f", "--forced", action="store_true", default=False, help="Always keep forced tracks")
+    parser.add_argument("-r", "--remove-name", metavar="remove-name", action=AppendSplitter, required=False,
+                        dest="remove_name", default=None,
+                        help="Comma-separated list of strings. If a track contains any of the specified strings in its description, they will be removed.")
 
     # Parse the list of given arguments
     globals()["cli_args"] = parser.parse_args(params)
