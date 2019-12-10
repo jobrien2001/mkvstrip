@@ -46,7 +46,7 @@ Windows::
 CLI Arguments
 -------------
 ::
-    usage: mkvstrip.py [-h] [-t] [-b path] -l lang [-s subs-lang] [-n] [-v]
+    usage: mkvstrip.py [-h] [-t] [-b path] -l lang [-s subs-lang] [-n] [-v] [-f] [-r remove-name]
                     paths [paths ...]
 
     Strips unnecessary tracks from MKV files.
@@ -71,6 +71,11 @@ CLI Arguments
     -s subs-lang, --subs-language subs-lang
                             If specified, defines subtitle languages to retain.
                             See description of --language for syntax.
-    -n, --no-subtitles    If no subtitles match the languages to retain, strip
+    -n, --no-subtitles      If no subtitles match the languages to retain, strip
                             all subtitles.
-    -v, --verbose         Verbose output.
+    -v, --verbose           Verbose output.
+    -f, --forced            Always keep forced tracks
+    -r remove-name, --remove-name remove-name
+                            Comma-separated list of strings. If a track contains
+                            any of the specified strings in its description, they
+                            will be removed.
