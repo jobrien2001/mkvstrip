@@ -257,6 +257,8 @@ class MKVFile(object):
         :return: Tuple of tracks to keep and remove
         :rtype: tuple[list[Track]]
         """
+        if cli_args.remove_name:
+            track_names_to_remove = cli_args.remove_name
         languages_to_keep = cli_args.language
         if track_type == 'audio':
             tracks = self.audio_tracks
@@ -272,7 +274,11 @@ class MKVFile(object):
         keep = []
         # Iterate through all tracks to find which track to keep or remove
         for track in tracks:
-            if track.lang in languages_to_keep:
+            if cli_args.forced and track.forced:
+                keep.append(track)
+            elif track.name and track_names_to_remove and any([xx in track.name for xx in track_names_to_remove]):
+                remove.append(track)
+            elif track.lang in languages_to_keep:
                 # Tracks we want to keep
                 keep.append(track)
             else:
