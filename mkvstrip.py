@@ -205,9 +205,11 @@ class Track(object):
         self.codec = track_data["codec"]
         self.type = track_data["type"]
         self.id = track_data["id"]
+        self.name = track_data["properties"].get("track_name")
+        self.forced = track_data["properties"].get("forced_track")
 
     def __str__(self):
-        return "Track #{}: {} - {}".format(self.id, self.lang, self.codec)
+        return "Track #{}: {} - {} - Name:{} - Forced:{}".format(self.id, self.lang, self.codec, self.name, self.forced)
 
 
 class MKVFile(object):
