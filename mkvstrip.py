@@ -241,6 +241,7 @@ class MKVFile(object):
         for track_data in json_data["tracks"]:
             track_obj = Track(track_data)
             track_map[track_obj.type].append(track_obj)
+        self.containertitle = json_data["container"]["properties"].get("title")
 
     @lru_cache()
     def _filtered_tracks(self, track_type):
@@ -313,14 +314,16 @@ class MKVFile(object):
         # The command line args required to remux the mkv file
         command = [cli_args.mkvmerge_bin, "--output"]
         print("\nRemuxing:", self.filename)
+        print("Title:", self.containertitle)
         print("============================")
 
         # Output the remuxed file to a temp tile, This will protect
         # the original file from been currupted if anything goes wrong
         tmp_file = u"%s.tmp" % self.path
         command.append(tmp_file)
-        command.extend(["--title", self.filename[:-4]])
-
+        if self.containertitle:
+            command.extend(["--title", self.containertitle])
+        # command.extend(["--title", self.filename[:-4]])
         # Iterate all tracks and mark which tracks are to be kepth
         for track_type in ("audio", "subtitle"):
             keep, remove = self._filtered_tracks(track_type)
