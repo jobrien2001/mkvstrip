@@ -275,10 +275,13 @@ class MKVFile(object):
         keep = []
         # Iterate through all tracks to find which track to keep or remove
         for track in tracks:
-            if cli_args.forced and track.forced:
-                keep.append(track)
-            elif track.name and track_names_to_remove and any([xx in track.name for xx in track_names_to_remove]):
-                remove.append(track)
+            # remove tracks whos name is unwanted
+            if track.name and track_names_to_remove and any([xx in track.name for xx in track_names_to_remove]):
+                # do not remove if its a forced track
+                if cli_args.forced and track.forced:
+                    keep.append(track)
+                else:
+                    remove.append(track)
             elif track.lang in languages_to_keep:
                 # Tracks we want to keep
                 keep.append(track)
@@ -396,7 +399,7 @@ def main(params=None):
                              " retain, strip all subtitles.")
     parser.add_argument("-v", "--verbose", action="store_true",
                         default=False, help="Verbose output.")
-    parser.add_argument("-f", "--forced", action="store_true", default=False, help="Always keep forced tracks")
+    parser.add_argument("-f", "--forced", action="store_true", default=False, help="Keep forced tracks marked for removal by --remove-name.")
     parser.add_argument("-r", "--remove-name", metavar="remove-name", action=AppendSplitter, required=False,
                         dest="remove_name", default=None,
                         help="Comma-separated list of strings. If a track contains any of the specified strings in its description, they will be removed.")
