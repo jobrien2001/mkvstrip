@@ -74,7 +74,7 @@ CLI Arguments
     -n, --no-subtitles      If no subtitles match the languages to retain, strip
                             all subtitles.
     -v, --verbose           Verbose output.
-    -f, --forced            Always keep forced tracks
+    -f, --forced            Keep forced tracks marked for removal by --remove-name.
     -r remove-name, --remove-name remove-name
                             Comma-separated list of strings. If a track contains
                             any of the specified strings in its description, they
