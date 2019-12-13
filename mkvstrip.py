@@ -275,16 +275,18 @@ class MKVFile(object):
         keep = []
         # Iterate through all tracks to find which track to keep or remove
         for track in tracks:
-            # remove tracks whos name is unwanted
-            if track.name and track_names_to_remove and any([xx in track.name for xx in track_names_to_remove]):
-                # do not remove if its a forced track
-                if cli_args.forced and track.forced:
-                    keep.append(track)
+            if track.lang in languages_to_keep:
+                # if tracks whos name is unwanted
+                if track.name and track_names_to_remove and any([xx in track.name for xx in track_names_to_remove]):
+                    # keep track if its a forced track, and --forced switch
+                    if cli_args.forced and track.forced:
+                        keep.append(track)
+                    # remove if its not a forced track or --forced switch not used
+                    else:
+                        remove.append(track)
                 else:
-                    remove.append(track)
-            elif track.lang in languages_to_keep:
-                # Tracks we want to keep
-                keep.append(track)
+                    # Tracks we want to keep
+                    keep.append(track)
             else:
                 # Tracks we want to remove
                 remove.append(track)
