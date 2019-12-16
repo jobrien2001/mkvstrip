@@ -46,36 +46,41 @@ Windows::
 CLI Arguments
 -------------
 ::
-    usage: mkvstrip.py [-h] [-t] [-b path] -l lang [-s subs-lang] [-n] [-v] [-f] [-r remove-name]
-                    paths [paths ...]
+usage: mkvstrip.py [-h] [-t] [-b path] -l lang [-s subs-lang] [-n] [-v] [-f]
+                   [-r remove-name] [-k] [-d]
+                   paths [paths ...]
 
-    Strips unnecessary tracks from MKV files.
+Strips unnecessary tracks from MKV files.
 
-    positional arguments:
-    paths                 Where your MKV files are stored. Can be a directories
-                            or files.
+positional arguments:
+  paths                 Where your MKV files are stored. Can be a directories
+                        or files.
 
-    optional arguments:
-    -h, --help            show this help message and exit
-    -t, --dry-run         Enable mkvmerge dry run for testing.
-    -b path, --mkvmerge-bin path
-                            The path to the MKVMerge executable.
-    -l lang, --language lang
-                            Comma-separated list of subtitle and audio languages
-                            to retain. E.g. eng,fre. Language codes can be either
-                            the 3 letters bibliographic ISO-639-2 form (like "fre"
-                            for French), or such a language code followed by a
-                            dash and a country code for specialities in languages
-                            (like "fre-ca" for Canadian French). Country codes are
-                            the same as used for internet domains.
-    -s subs-lang, --subs-language subs-lang
-                            If specified, defines subtitle languages to retain.
-                            See description of --language for syntax.
-    -n, --no-subtitles      If no subtitles match the languages to retain, strip
-                            all subtitles.
-    -v, --verbose           Verbose output.
-    -f, --forced            Keep forced tracks marked for removal by --remove-name.
-    -r remove-name, --remove-name remove-name
-                            Comma-separated list of strings. If a track contains
-                            any of the specified strings in its description, they
-                            will be removed.
+optional arguments:
+  -h, --help            show this help message and exit
+  -t, --dry-run         Enable mkvmerge dry run for testing.
+  -b path, --mkvmerge-bin path
+                        The path to the MKVMerge executable.
+  -l lang, --language lang
+                        Comma-separated list of subtitle and audio languages
+                        to retain. E.g. eng,fre. Language codes can be either
+                        the 3 letters bibliographic ISO-639-2 form (like "fre"
+                        for French), or such a language code followed by a
+                        dash and a country code for specialities in languages
+                        (like "fre-ca" for Canadian French). Country codes are
+                        the same as used for internet domains.
+  -s subs-lang, --subs-language subs-lang
+                        If specified, defines subtitle languages to retain.
+                        See description of --language for syntax.
+  -n, --no-subtitles    If no subtitles match the languages to retain, strip
+                        all subtitles.
+  -v, --verbose         Verbose output.
+  -f, --forced          Keep forced tracks marked for removal by --remove-
+                        name.
+  -r remove-name, --remove-name remove-name
+                        Comma-separated list of strings. If a track contains
+                        any of the specified strings in its description, they
+                        will be removed.
+  -k, --keep-first      Always keep first audio track, even when no language
+                        match
+  -d, --default-track   Set the first audio track as default
