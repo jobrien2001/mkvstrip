@@ -241,6 +241,7 @@ class MKVFile(object):
         for track_data in json_data["tracks"]:
             track_obj = Track(track_data)
             track_map[track_obj.type].append(track_obj)
+        # get container title
         self.containertitle = json_data["container"]["properties"].get("title")
 
     @lru_cache()
@@ -275,20 +276,27 @@ class MKVFile(object):
         keep = []
         # Iterate through all tracks to find which track to keep or remove
         for track in tracks:
-            if track.lang in languages_to_keep:
-                # if tracks whos name is unwanted
-                if track.name and track_names_to_remove and any([xx in track.name for xx in track_names_to_remove]):
-                    # keep track if its a forced track, and --forced switch
+            # Mark keep first audio track if -k switch
+            if track_type == 'audio' and not keep and cli_args.keep_first:
+                keep.append(track)
+            # Mark remove all subtitle tracks if -n switch
+            elif track_type == 'subtitle' and cli_args.no_subtitles:
+                remove.append(track)
+            # Look for tracks matching languages in -l or -s switches
+            elif track.lang in languages_to_keep:
+                # if track's name match -r switch list
+                if track.name and track_names_to_remove and any([xx.lower() in track.name.lower() for xx in track_names_to_remove]):
+                    # Mark keep track forced if -f switch
                     if cli_args.forced and track.forced:
                         keep.append(track)
-                    # remove if its not a forced track or --forced switch not used
+                    # Mark remove track if no -f switch
                     else:
                         remove.append(track)
                 else:
-                    # Tracks we want to keep
+                    # Mark keep tracks that do not match -r switch list
                     keep.append(track)
             else:
-                # Tracks we want to remove
+                # Mark tracks we want to remove
                 remove.append(track)
 
         return keep, remove
@@ -332,8 +340,10 @@ class MKVFile(object):
         # Iterate all tracks and mark which tracks are to be kepth
         for track_type in ("audio", "subtitle"):
             keep, remove = self._filtered_tracks(track_type)
-            if ((track_type == "subtitle" and cli_args.no_subtitles)
-                    or keep) and remove:
+            # Only go through tracks who meet conditions
+            # 1. audio with tracks to keep and remove
+            # 2. subtitles with tracks to remove
+            if ((track_type == "audio" and keep) or track_type == "subtitle") and remove:
                 keep_ids = []
 
                 print("Retaining %s track(s):" % track_type)
@@ -341,13 +351,15 @@ class MKVFile(object):
                     keep_ids.append(str(track.id))
                     print("   ", track)
 
-                    # Set the first track as default
-                    command.extend(["--default-track", ":".join((str(track.id), "0" if count else "1"))])
+                    # Set the first audio track as default if -d switch
+                    if track_type == "audio" and cli_args.default_track:
+                        command.extend(["--default-track", ":".join((str(track.id), "0" if count else "1"))])
 
                 # Set which tracks are to be kepth
                 if keep_ids:
                     command.extend(["--%s-tracks" % track_type,
                                     ",".join(keep_ids)])
+                # if no subtitles to keep, remove all subtitles
                 elif track_type == "subtitle":
                     command.extend(["--no-subtitles"])
 
@@ -357,7 +369,6 @@ class MKVFile(object):
                     print("   ", track)
 
                 print("----------------------------")
-
         # Add source mkv file to command and remux
         command.append(self.path)
         if remux_file(command):
@@ -367,6 +378,12 @@ class MKVFile(object):
             # So time to do some cleanup
             if os.path.exists(tmp_file):
                 os.remove(tmp_file)
+
+        # print command executed
+        if cli_args.verbose:
+            command.extend(["--verbose"])
+            print("Executing", command)
+            
 
 
 @catch_interrupt
@@ -405,6 +422,12 @@ def main(params=None):
     parser.add_argument("-r", "--remove-name", metavar="remove-name", action=AppendSplitter, required=False,
                         dest="remove_name", default=None,
                         help="Comma-separated list of strings. If a track contains any of the specified strings in its description, they will be removed.")
+    parser.add_argument("-k", "--keep-first", default=False,
+                        action="store_true", dest="keep_first",
+                        help="Always keep first audio track, even when no language match")
+    parser.add_argument("-d", "--default-track", default=False,
+                        action="store_true", dest="default_track",
+                        help="Set the first audio track as default")
 
     # Parse the list of given arguments
     globals()["cli_args"] = parser.parse_args(params)
