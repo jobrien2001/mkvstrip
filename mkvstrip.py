@@ -383,8 +383,6 @@ class MKVFile(object):
         if cli_args.verbose:
             command.extend(["--verbose"])
             print("Executing", command)
-            
-
 
 @catch_interrupt
 def main(params=None):
